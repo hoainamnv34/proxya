@@ -6,7 +6,8 @@ inputs:
     required: true
   timeout:
     description: 'The timeout in seconds'
-    required: true
+    required: false
+    default: 15
   command:
     description: 'The command to run after the service is ready'
     required: false
@@ -15,7 +16,4 @@ inputs:
 runs:
   using: 'docker'
   image: 'Dockerfile'
-  args:
-    - ${{ inputs.host }}
-    - ${{ inputs.timeout }}
-    - ${{ inputs.command }}
+

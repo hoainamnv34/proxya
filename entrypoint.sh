@@ -1,3 +1,3 @@
 #!/bin/sh
 ls
-./wait-for-it.sh "$1" --timeout="$2" --strict -- "$3"
+./wait-for-it.sh "$INPUT_HOST" --timeout="$INPUT_TIMEOUT "--strict -- "$INPUT_COMMAND"
