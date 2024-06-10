@@ -1,0 +1,21 @@
+name: 'Wait for It Action'
+description: 'A reusable GitHub Action to wait for a service to be ready'
+inputs:
+  host:
+    description: 'The host and port to wait for (e.g., localhost:5432)'
+    required: true
+  timeout:
+    description: 'The timeout in seconds'
+    required: true
+  command:
+    description: 'The command to run after the service is ready'
+    required: false
+    default: ''
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.host }}
+    - ${{ inputs.timeout }}
+    - ${{ inputs.command }}
