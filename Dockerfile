@@ -11,4 +11,6 @@ RUN chmod +x /wait-for-it.sh
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+RUN ls
+
 ENTRYPOINT ["/entrypoint.sh"]
