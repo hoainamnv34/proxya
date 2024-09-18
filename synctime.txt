@@ -1,0 +1,34 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Cài đặt ntp
+      apt:
+        name: ntp
+        state: present
+        update_cache: yes
+
+    - name: Cấu hình các ntp server 10.5.2.1 và 10.5.2.2
+      blockinfile:
+        path: /etc/ntp.conf
+        block: |
+          server 10.5.2.1 iburst
+          server 10.5.2.2 iburst
+        marker: "# {mark} Managed by Ansible"
+      state: present
+
+    - name: Khởi động và kích hoạt ntpd
+      systemd:
+        name: ntp
+        enabled: yes
+        state: restarted
+
+    - name: Đồng bộ thời gian ngay lập tức
+      command: ntpd -gq
+
+    - name: Kiểm tra trạng thái đồng bộ
+      command: ntpq -p
+      register: ntp_status
+
+    - debug:
+        var: ntp_status.stdout
