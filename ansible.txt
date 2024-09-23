@@ -42,3 +42,15 @@
         mode: '0644'
       vars:
         site_name: "{{ group_names[0] }}"  # Lấy tên site hiện tại
+
+
+
+
+
+{
+    "unit_code": "{{ unit_code }}",
+    "mongo": [{% for host in groups[site_name] if (site_name ~ 'db') in host or (site_name ~ 'record') in host %}"{% if unit_code == 'site1' %}192.168.241{% else %}192.168.10{% endif %}.{{ hostvars[host]['ansible_host'].split('.')[-1] }}"{% if not loop.last %}, {% endif %}{% endfor %}],
+    "master": [{% for host in groups[site_name] if 'master' in host %}"{% if unit_code == 'site1' %}192.168.241{% else %}192.168.10{% endif %}.{{ hostvars[host]['ansible_host'].split('.')[-1] }}"{% if not loop.last %}, {% endif %}{% endfor %}],
+    "worker": [{% for host in groups[site_name] if 'slave' in host %}"{% if unit_code == 'site1' %}192.168.241{% else %}192.168.10{% endif %}.{{ hostvars[host]['ansible_host'].split('.')[-1] }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+}
+
