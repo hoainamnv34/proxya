@@ -1,0 +1,44 @@
+{
+    "unit_code": "{{ unit_code }}",
+    "mongo": [{% for host in groups['mongo'] %}"{{ hostvars[host]['ansible_host'] }}"{% if not loop.last %}, {% endif %}{% endfor %}],
+    "master": ["{{ hostvars['master1']['ansible_host'] }}"],
+    "worker": [{% for host in groups['site1'] if 'slave' in host %}"{{ hostvars[host]['ansible_host'] }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+}
+
+
+---
+- name: Copy config file to master1 of each site
+  hosts: master1
+  vars:
+    json_file_path: "/etc/myapp/config.json"  # Đường dẫn lưu file trên server
+  tasks:
+    - name: Create JSON config file from template
+      template:
+        src: templates/config.json.j2
+        dest: "{{ json_file_path }}"
+        mode: '0644'
+      vars:
+        mongo_hosts: "{{ groups['mongo'] | map('extract', hostvars, 'ansible_host') | list }}"
+        master_hosts: "{{ hostvars['master1']['ansible_host'] }}"
+        worker_hosts: "{{ groups['site1'] | select('match', '^slave.*') | map('extract', hostvars, 'ansible_host') | list }}"
+{
+    "unit_code": "{{ unit_code }}",
+    "mongo": [{% for host in groups['mongo'] %}"{{ hostvars[host]['ansible_host'] }}"{% if not loop.last %}, {% endif %}{% endfor %}],
+    "master": [{% for host in groups[site_name] if 'master' in host %}"{{ hostvars[host]['ansible_host'] }}"{% if not loop.last %}, {% endif %}{% endfor %}],
+    "worker": [{% for host in groups[site_name] if 'slave' in host %}"{{ hostvars[host]['ansible_host'] }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+}
+
+
+---
+- name: Copy config file to master1 of each site
+  hosts: master1
+  vars:
+    json_file_path: "/etc/myapp/config.json"  # Đường dẫn lưu file trên server
+  tasks:
+    - name: Create JSON config file from template
+      template:
+        src: templates/config.json.j2
+        dest: "{{ json_file_path }}"
+        mode: '0644'
+      vars:
+        site_name: "{{ group_names[0] }}"  # Lấy tên site hiện tại
