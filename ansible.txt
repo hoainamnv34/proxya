@@ -54,3 +54,50 @@
     "worker": [{% for host in groups[site_name] if 'slave' in host %}"{% if unit_code == 'site1' %}192.168.241{% else %}192.168.10{% endif %}.{{ hostvars[host]['ansible_host'].split('.')[-1] }}"{% if not loop.last %}, {% endif %}{% endfor %}]
 }
 
+# Định nghĩa các mã màu cho terminal
+COLORS=(
+  "\[\e[38;5;111m\]"   # Màu xanh dương nhạt
+  "\[\e[38;5;220m\]"   # Màu vàng đậm
+  "\[\e[38;5;160m\]"   # Màu đỏ đất
+  "\[\e[38;5;196m\]"   # Màu đỏ tươi
+  "\[\e[38;5;148m\]"   # Màu xanh lá nhạt
+  "\[\e[38;5;255m\]"   # Màu kem nhạt
+)
+
+# Định nghĩa các mã màu nền toàn bộ terminal (mã điều khiển ANSI)
+BACKGROUND_COLORS=(
+  "\033]11;#f96167\007"  # Màu đỏ nhạt
+  "\033]11;#292826\007"  # Màu xám đậm
+  "\033]11;#fbeaeb\007"  # Màu hồng nhạt
+  "\033]11;#243665\007"  # Màu xanh đậm
+  "\033]11;#161b21\007"  # Màu xanh xám tối
+)
+
+# Lưu trữ chỉ mục hiện tại trong tệp để duy trì trạng thái giữa các phiên
+INDEX_FILE="$HOME/.bash_color_index"
+
+# Đọc chỉ mục từ tệp, nếu không tồn tại thì bắt đầu từ 0
+if [ -f "$INDEX_FILE" ]; then
+  index=$(cat "$INDEX_FILE")
+else
+  index=0
+fi
+
+# Tăng chỉ mục và đặt lại về 0 nếu vượt quá số lượng phần tử trong mảng
+index=$(( (index + 1) % ${#COLORS[@]} ))
+
+# Lấy màu prompt và màu nền từ chỉ mục hiện tại (đã tăng)
+RANDOM_COLOR=${COLORS[$index]}
+RANDOM_BG=${BACKGROUND_COLORS[$index]}
+
+# Đặt màu riêng cho đường dẫn (path)
+PATH_COLOR="\[\e[38;5;226m\]"  # Màu vàng cố định cho đường dẫn
+
+# Đặt prompt với màu theo thứ tự cho tên người dùng và màu cố định cho đường dẫn
+PS1="${RANDOM_COLOR}\u@\h:${PATH_COLOR}\w\[\e[0m\] \$ "
+
+# Áp dụng màu nền
+echo -ne "$RANDOM_BG"
+
+# Lưu chỉ mục hiện tại vào tệp để sử dụng cho lần sau
+echo $index > "$INDEX_FILE"
