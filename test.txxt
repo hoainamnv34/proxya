@@ -1,0 +1,30 @@
+import sys
+
+def read_versions(file_path):
+    versions = {}
+    with open(file_path, 'r') as f:
+        for line in f:
+            if ':' in line:
+                service, version = line.strip().split(':')
+                versions[service.strip()] = version.strip()
+    return versions
+
+def main(old_path, current_path, output_path='changed_services.txt'):
+    old_versions = read_versions(old_path)
+    current_versions = read_versions(current_path)
+
+    with open(output_path, 'w') as f:
+        for service in current_versions:
+            old_version = old_versions.get(service)
+            current_version = current_versions[service]
+            if old_version and old_version != current_version:
+                f.write(f"{service}: {current_version}\n")
+
+if __name__ == '__main__':
+    if len(sys.argv) < 3:
+        print("Cách dùng: python script.py <old_version_path> <current_version_path>")
+        sys.exit(1)
+
+    old_file = sys.argv[1]
+    current_file = sys.argv[2]
+    main(old_file, current_file)
