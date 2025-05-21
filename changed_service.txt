@@ -1,0 +1,20 @@
+def read_versions(file_path):
+    versions = {}
+    with open(file_path, 'r') as f:
+        for line in f:
+            if ':' in line:
+                service, version = line.strip().split(':')
+                versions[service.strip()] = version.strip()
+    return versions
+
+# Đọc version cũ và mới
+old_versions = read_versions('old.txt')
+current_versions = read_versions('current.txt')
+
+# So sánh và ghi ra file
+with open('changed_services.txt', 'w') as f:
+    for service in current_versions:
+        old_version = old_versions.get(service)
+        current_version = current_versions[service]
+        if old_version and old_version != current_version:
+            f.write(f"{service}: {old_version} -> {current_version}\n")
